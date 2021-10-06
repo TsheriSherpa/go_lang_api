@@ -1,29 +1,38 @@
 package main
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
 	"github.com/tsheri/go-fiber/database"
 	"github.com/tsheri/go-fiber/database/migration"
 	"github.com/tsheri/go-fiber/user"
 )
 
 func hello(c *fiber.Ctx) error {
-	return c.SendString("Hello World")
+	c.Set(fiber.HeaderContentType, fiber.MIMETextHTML)
+	return c.SendString("<h1>Hello, World d;):sdfsd:: </h1>")
 }
 
-func setupRoutes(app *fiber.App) {
-	app.Get("/users", user.GetUsers)
-	app.Get("/user/:id", user.GetUser)
-	app.Post("/user", user.SaveUser)
-	app.Delete("/user/:id", user.DeleteUser)
-	app.Put("/user/:id", user.UpdateUser)
+func setupApiRoutes(app *fiber.App) {
+	api := app.Group("/api/v1")
+
+	api.Get("/users", user.GetUsers)
+	api.Get("/user/:id", user.GetUser)
+	api.Post("/user", user.SaveUser)
+	api.Delete("/user/:id", user.DeleteUser)
+	api.Put("/user/:id", user.UpdateUser)
 }
 
 func main() {
+	godotenv.Load()
+	fmt.Println(os.Getenv("APP_NAME"))
 	database.InitDatabaseConnection()
 	migration.Migrate(database.DB)
 	app := fiber.New()
-	setupRoutes(app)
+	setupApiRoutes(app)
 	app.Get("/", hello)
 	app.Listen(":5000")
 }
