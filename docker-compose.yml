@@ -1,0 +1,40 @@
+version: '3.5'
+services:
+    web:
+        build: .
+        restart: always
+        ports:
+            - "5000:5000"
+        volumes:
+            - .:/app
+        depends_on:
+            - "db"
+        command: "nodemon --exec go run main.go --signal SIGTERM"
+
+    db:
+        image: mariadb
+        volumes:
+            - "mysql_data:/var/lib/mysql"
+        ports:
+            - "3308:3306"
+        restart: always
+        environment:
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_DATABASE=go_webapp
+            - MYSQL_USER=root
+            - MYSQL_PASSWORD=root
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        restart: always
+        depends_on:
+            - db
+        ports:
+            - 8082:80
+        environment:
+            - PMA_ARBITRARY=1
+            - PMA_HOST=db
+            - PMA_PORTS=3308
+
+volumes:
+    mysql_data:   

@@ -13,7 +13,7 @@ import (
 
 func hello(c *fiber.Ctx) error {
 	c.Set(fiber.HeaderContentType, fiber.MIMETextHTML)
-	return c.SendString("<h1>Hello, World d;):sdfsd:: </h1>")
+	return c.SendString("<h1>Hello, World</h1>")
 }
 
 func setupApiRoutes(app *fiber.App) {
