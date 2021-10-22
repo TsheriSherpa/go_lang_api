@@ -9,7 +9,7 @@ services:
             - .:/app
         depends_on:
             - "db"
-        command: "nodemon --exec go run main.go --signal SIGTERM"
+        command: "nodemon --exec go run main.go --signal SIGTERM || exit 1"
 
     db:
         image: mariadb
@@ -21,8 +21,8 @@ services:
         environment:
             - MYSQL_ROOT_PASSWORD=root
             - MYSQL_DATABASE=go_webapp
-            - MYSQL_USER=root
             - MYSQL_PASSWORD=root
+            - MYSQL_USER=root
 
     phpmyadmin:
         image: phpmyadmin/phpmyadmin
@@ -34,7 +34,6 @@ services:
         environment:
             - PMA_ARBITRARY=1
             - PMA_HOST=db
-            - PMA_PORTS=3308
 
 volumes:
     mysql_data:   

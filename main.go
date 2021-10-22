@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
+	"github.com/tsheri/go-fiber/config"
 	"github.com/tsheri/go-fiber/database"
 	"github.com/tsheri/go-fiber/database/migration"
 	"github.com/tsheri/go-fiber/user"
@@ -26,11 +26,16 @@ func setupApiRoutes(app *fiber.App) {
 	api.Put("/user/:id", user.UpdateUser)
 }
 
-func main() {
-	godotenv.Load()
-	fmt.Println(os.Getenv("APP_NAME"))
-	database.InitDatabaseConnection()
+func init() {
+	if err := godotenv.Load(); err != nil {
+		fmt.Println("No .env file found")
+	}
+	conf := config.New()
+	database.InitDatabaseConnection(conf)
 	migration.Migrate(database.DB)
+}
+
+func main() {
 	app := fiber.New()
 	setupApiRoutes(app)
 	app.Get("/", hello)
