@@ -19,6 +19,7 @@ func hello(c *fiber.Ctx) error {
 func setupApiRoutes(app *fiber.App) {
 	api := app.Group("/api/v1")
 
+	app.Get("/", hello)
 	api.Get("/users", user.GetUsers)
 	api.Get("/user/:id", user.GetUser)
 	api.Post("/user", user.SaveUser)
@@ -38,6 +39,5 @@ func init() {
 func main() {
 	app := fiber.New()
 	setupApiRoutes(app)
-	app.Get("/", hello)
 	app.Listen(":5000")
 }
