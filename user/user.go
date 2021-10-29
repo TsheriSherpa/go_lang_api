@@ -2,7 +2,7 @@ package user
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/tsheri/go-fiber/database"
+	"github.com/tsheri/go-fiber/pkg/database"
 	"gorm.io/gorm"
 )
 

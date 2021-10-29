@@ -5,9 +5,9 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
-	"github.com/tsheri/go-fiber/config"
-	"github.com/tsheri/go-fiber/database"
-	"github.com/tsheri/go-fiber/database/migration"
+	"github.com/tsheri/go-fiber/pkg/database"
+	"github.com/tsheri/go-fiber/pkg/database/migration"
+	"github.com/tsheri/go-fiber/pkg/utils"
 	"github.com/tsheri/go-fiber/user"
 )
 
@@ -31,13 +31,13 @@ func init() {
 	if err := godotenv.Load(); err != nil {
 		fmt.Println("No .env file found")
 	}
-	conf := config.New()
-	database.InitDatabaseConnection(conf)
+	database.InitDatabaseConnection()
 	migration.Migrate(database.DB)
 }
 
 func main() {
 	app := fiber.New()
+	app.Static("/", "./public")
 	setupApiRoutes(app)
-	app.Listen(":5000")
+	utils.StartServer(app)
 }
