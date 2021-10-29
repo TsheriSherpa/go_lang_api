@@ -5,39 +5,41 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
-	"github.com/tsheri/go-fiber/pkg/database"
-	"github.com/tsheri/go-fiber/pkg/database/migration"
+	"github.com/tsheri/go-fiber/pkg/configs"
+	"github.com/tsheri/go-fiber/pkg/middleware"
+	"github.com/tsheri/go-fiber/pkg/routes"
 	"github.com/tsheri/go-fiber/pkg/utils"
-	"github.com/tsheri/go-fiber/user"
 )
 
-func hello(c *fiber.Ctx) error {
+func index(c *fiber.Ctx) error {
 	c.Set(fiber.HeaderContentType, fiber.MIMETextHTML)
-	return c.SendString("<h1>Hello, World</h1>")
-}
-
-func setupApiRoutes(app *fiber.App) {
-	api := app.Group("/api/v1")
-
-	app.Get("/", hello)
-	api.Get("/users", user.GetUsers)
-	api.Get("/user/:id", user.GetUser)
-	api.Post("/user", user.SaveUser)
-	api.Delete("/user/:id", user.DeleteUser)
-	api.Put("/user/:id", user.UpdateUser)
+	return c.Render("index", fiber.Map{
+		"hello": "world",
+	})
 }
 
 func init() {
 	if err := godotenv.Load(); err != nil {
 		fmt.Println("No .env file found")
 	}
-	database.InitDatabaseConnection()
-	migration.Migrate(database.DB)
 }
 
 func main() {
-	app := fiber.New()
-	app.Static("/", "./public")
-	setupApiRoutes(app)
-	utils.StartServer(app)
+	config := configs.FiberConfig()
+	app := fiber.New(config) // Define new fiber app
+	app.Get("/", index)
+	app.Static("/", "./public")     // set static files location
+	middleware.FiberMiddleware(app) // Register Fiber's middleware for app.
+
+	// Routes.
+	routes.SwaggerRoute(app)      // Register a route for API Docs (Swagger).
+	routes.RegisterApiRoutes(app) // Register a private routes for app.
+	routes.NotFoundRoute(app)     // Register route for 404 Error.
+
+	if utils.GetEnv("STAGE_STATUS", "") == "dev" {
+		utils.StartServer(app)
+	} else {
+		// Start server (with or without graceful shutdown).
+		utils.StartServerWithGracefulShutdown(app)
+	}
 }
