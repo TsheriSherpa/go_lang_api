@@ -14,7 +14,7 @@ func ConnectionURLBuilder(n string) (string, error) {
 	case "mysql":
 		// URL for Mysql connection.
 		url = fmt.Sprintf(
-			"%s:%s@%s(%s:%s)/%s?charset=utf8&parseTime=true",
+			"%s:%s@%s(%s:%s)/%s?charset=utf8&parseTime=true&multiStatements=true",
 			GetEnv("DB_USER", ""),
 			GetEnv("DB_PASSWORD", ""),
 			GetEnv("DB_CONNECTION", ""),

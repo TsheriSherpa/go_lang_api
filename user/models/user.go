@@ -17,7 +17,7 @@ type User struct {
 	FirstName    string    `db:"title" json:"firstname" validate:"required,lte=255"`
 	LastName     string    `db:"author" json:"lastname" validate:"required,lte=255"`
 	Status       int       `db:"status" json:"status" validate:"required,len=1"`
-	Email        string    `db:"email" json:"email" validate:"required,,emaillte=255"`
+	Email        string    `db:"email" json:"email" validate:"required,email,lte=255"`
 	PasswordHash string    `db:"password" json:"password,omitempty" validate:"required,lte=255"`
 }
 

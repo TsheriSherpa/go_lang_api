@@ -1,9 +1,14 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/gofiber/fiber/v2"
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/mysql"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/joho/godotenv"
 	"github.com/tsheri/go-fiber/pkg/configs"
 	"github.com/tsheri/go-fiber/pkg/middleware"
@@ -22,13 +27,36 @@ func init() {
 	if err := godotenv.Load(); err != nil {
 		fmt.Println("No .env file found")
 	}
+
+	url, err := utils.ConnectionURLBuilder("mysql")
+	if err != nil {
+		panic("Unable to generate db connection string")
+	}
+
+	db, _ := sql.Open("mysql", url)
+	if err := db.Ping(); err != nil {
+		defer db.Close() // close database connection
+		fmt.Println("error, not sent ping to database, %w", err)
+	}
+
+	driver, _ := mysql.WithInstance(db, &mysql.Config{})
+	m, er := migrate.NewWithDatabaseInstance(
+		"file://platform/migrations/",
+		"go_webapp",
+		driver,
+	)
+	if er != nil {
+		fmt.Println(er.Error())
+	}
+	m.Steps(2)
 }
 
 func main() {
+
 	config := configs.FiberConfig()
 	app := fiber.New(config) // Define new fiber app
 	app.Get("/", index)
-	app.Static("/", "./public")     // set static files location
+	app.Static("/", "./public")     // set static files locatigo on
 	middleware.FiberMiddleware(app) // Register Fiber's middleware for app.
 
 	// Routes.
@@ -36,7 +64,7 @@ func main() {
 	routes.RegisterApiRoutes(app) // Register a private routes for app.
 	routes.NotFoundRoute(app)     // Register route for 404 Error.
 
-	if utils.GetEnv("STAGE_STATUS", "") == "dev" {
+	if utils.GetEnv("APP_ENV", "") == "production" {
 		utils.StartServer(app)
 	} else {
 		// Start server (with or without graceful shutdown).
