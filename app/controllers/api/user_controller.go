@@ -5,9 +5,9 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	"github.com/tsheri/go-fiber/app/models"
 	"github.com/tsheri/go-fiber/pkg/utils"
 	"github.com/tsheri/go-fiber/platform/database"
-	"github.com/tsheri/go-fiber/user/models"
 )
 
 // CreateUser func for creates a new user.

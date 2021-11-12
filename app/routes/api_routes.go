@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/tsheri/go-fiber/user/controllers/api"
+	"github.com/tsheri/go-fiber/app/controllers/api"
 )
 
 func RegisterApiRoutes(a *fiber.App) {

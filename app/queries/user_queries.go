@@ -3,7 +3,7 @@ package queries
 import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
-	"github.com/tsheri/go-fiber/user/models"
+	"github.com/tsheri/go-fiber/app/models"
 )
 
 // UserQueries struct for queries from User model.

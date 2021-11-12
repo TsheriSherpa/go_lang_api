@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gofiber/fiber/v2"
-	user "github.com/tsheri/go-fiber/user/routes"
+	user "github.com/tsheri/go-fiber/app/routes"
 
 	swagger "github.com/arsmn/fiber-swagger/v2"
 )

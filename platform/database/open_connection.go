@@ -1,6 +1,6 @@
 package database
 
-import "github.com/tsheri/go-fiber/user/queries"
+import "github.com/tsheri/go-fiber/app/queries"
 
 // Queries struct for collect all app queries.
 type Queries struct {
