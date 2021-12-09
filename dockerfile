@@ -14,9 +14,16 @@ apt-get -y install nodejs npm
 
 RUN npm -y install -g nodemon
 
+COPY go.mod .
+
+COPY go.sum .
+
+RUN go mod download
+
 ADD . /app/
 
-# Download necessary Go modules
-RUN go mod download
+RUN groupadd -r docker && useradd -g docker docker
+
+RUN chown -R docker:docker /app
 
 EXPOSE 5000
