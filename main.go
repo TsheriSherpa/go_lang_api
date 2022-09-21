@@ -6,6 +6,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/redirect/v2"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -15,13 +16,6 @@ import (
 	"github.com/tsheri/go-fiber/pkg/routes"
 	"github.com/tsheri/go-fiber/pkg/utils"
 )
-
-func index(c *fiber.Ctx) error {
-	c.Set(fiber.HeaderContentType, fiber.MIMETextHTML)
-	return c.Render("index", fiber.Map{
-		"hello": "world",
-	})
-}
 
 func init() {
 	if err := godotenv.Load(); err != nil {
@@ -54,15 +48,20 @@ func init() {
 func main() {
 
 	config := configs.FiberConfig()
-	app := fiber.New(config) // Define new fiber app
-	app.Get("/", index)
-	app.Static("/", "./public")     // set static files locatigo on
+	app := fiber.New(config)    // Define new fiber app
+	app.Static("/", "./public") // set static files locatigo on
+
+	app.Use(redirect.New(redirect.Config{
+		Rules: map[string]string{
+			"/": "/admin",
+		},
+		StatusCode: 301,
+	}))
+
 	middleware.FiberMiddleware(app) // Register Fiber's middleware for app.
 
 	// Routes.
-	routes.SwaggerRoute(app)      // Register a route for API Docs (Swagger).
-	routes.RegisterApiRoutes(app) // Register a private routes for app.
-	routes.NotFoundRoute(app)     // Register route for 404 Error.
+	routes.RegisterRoutes(app) // Register a route for API Docs (Swagger).
 
 	if utils.GetEnv("APP_ENV", "") == "production" {
 		utils.StartServer(app)

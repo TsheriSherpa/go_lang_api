@@ -7,6 +7,13 @@ import (
 	swagger "github.com/arsmn/fiber-swagger/v2"
 )
 
+func index(c *fiber.Ctx) error {
+	c.Set(fiber.HeaderContentType, fiber.MIMETextHTML)
+	return c.Render("index", fiber.Map{
+		"hello": "world",
+	})
+}
+
 // SwaggerRoute func for describe group of API Docs routes.
 func SwaggerRoute(a *fiber.App) {
 	// Create routes group.
@@ -18,4 +25,16 @@ func SwaggerRoute(a *fiber.App) {
 
 func RegisterApiRoutes(a *fiber.App) {
 	user.RegisterApiRoutes(a)
+}
+
+func RegisterWebRoutes(a *fiber.App) {
+	route := a.Group("/admin")
+	route.Get("", index)
+}
+
+func RegisterRoutes(a *fiber.App) {
+	RegisterWebRoutes(a)
+	SwaggerRoute(a)
+	RegisterApiRoutes(a)
+	NotFoundRoute(a)
 }
